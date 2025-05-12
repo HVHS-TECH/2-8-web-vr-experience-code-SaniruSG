@@ -9,3 +9,12 @@ body{
   background-position: center;
   
 }
+
+button {
+  background: transparent;
+  background: none;
+  border: none;
+  cursor: pointer;
+    margin-top: 350px;
+  margin-left: 100px; 
+}
