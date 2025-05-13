@@ -2,19 +2,40 @@ html, body{
     height: 100%;
 }
 
+.instructions-btn img {
+  width: 300px;   /* or however small you want it */
+  height: auto;  /* keeps the aspect ratio */
+}
+
+.instructions-btn {
+  background: transparent;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  bottom: 42vh;
+  left: 16.5vw;
+}
+
+.start-btn img {
+  width: 200px;   /* or however small you want it */
+  height: auto;  /* keeps the aspect ratio */
+}
+
+.start-btn {
+  background: transparent;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  bottom: 31vh;
+  left: 20vw;
+}
+
+
 body{
   background-image: url('Images/Refined\ Landing\ Page\ empty.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  
-}
-
-button {
-  background: transparent;
-  background: none;
-  border: none;
-  cursor: pointer;
-    margin-top: 350px;
-  margin-left: 100px; 
 }
