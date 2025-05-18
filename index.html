@@ -15,9 +15,32 @@
 
     <body>
      
-<button class="instructions-btn">
-        <img src="Images/Instructions.png" />
-      </button>
+<script>
+  function showInstructions() {
+    document.getElementById("instructionsPage").style.display = "flex";
+  }
+
+  function hideInstructions() {
+    document.getElementById("instructionsPage").style.display = "none";
+  }
+</script>
+
+
+
+<!-- Landing Page -->
+<button class="instructions-btn" onclick="showInstructions()">
+  <img src="Images/Instructions.png" alt="Instructions page">
+</button>
+
+<!-- Instructions Page Overlay (Only one version!) -->
+<div class="instructions-page-overlay" id="instructionsPage">
+  <!-- Close Button -->
+  <img src="Images/close.png" alt="Close" class="close-btn" onclick="hideInstructions()">
+
+  <!-- Instructions Image -->
+  <img src="Images/Refined Instructions Page empty.png" alt="Instructions Page">
+</div>
+
 
 <button class="start-btn">
         <img src="Images/Start.png" />
