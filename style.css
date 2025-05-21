@@ -3,8 +3,8 @@ html, body{
 }
 
 .instructions-btn img {
-  width: 300px;   /* or however small you want it */
-  height: auto;  /* keeps the aspect ratio */
+  width: 300px;   
+  height: auto;  
 }
 
 .instructions-btn {
@@ -18,8 +18,8 @@ html, body{
 }
 
 .start-btn img {
-  width: 200px;   /* or however small you want it */
-  height: auto;  /* keeps the aspect ratio */
+  width: 200px;   
+  height: auto;  
 }
 
 .start-btn {
@@ -46,7 +46,7 @@ html, body{
   flex-direction: column;
 }
 
-/* Center instructions image */
+
 .instructions-page-overlay img:not(.close-btn) {
   width: 70%;
   height: auto;
@@ -54,7 +54,7 @@ html, body{
   box-shadow: 0 0 20px black;
 }
 
-/* Style for close button */
+
 .close-btn {
   position: absolute;
   top: 90px;
