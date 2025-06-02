@@ -2,12 +2,120 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>3D World</title>
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <title>Parkour Run Experience</title>
+        <script src="https://aframe.io/releases/1.1.0/aframe.min.js"></script>
+        <script src="https://recast-api.donmccurdy.com/aframe-inspector-plugin-recast.js" crossorigin="anonymous"></script>
+        <!-- A-frame extras-->
+        <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+
+        <script src="https://rawgit.com/donmccurdy/aframe-extras/v2.1.1/dist/aframe-extras.loaders.min.js"></script>
+
   </head>
   <body>
-    <a-scene>
-      <a-plane position="0 0 0" rotation="-90 0 0" width="10" height="10" color="blue"></a-plane>
+
+     <a-scene>
+
+<a-entity id="cameraRig"
+          position="0 1 0"
+          movement-controls="speed: 0.5"
+          dynamic-body="shape: box; mass: 1;">
+  <a-entity camera id="camera" position="0 1.6 0" look-controls></a-entity>
+</a-entity>
+
+<a-text 
+    value="Safe Zone!" 
+    position="0 0.01 -3" 
+    rotation="-90 0 0" 
+    
+    color="black"
+    width="6">
+  </a-text>
+
+      <a-plane  position="0 0 0" rotation="-90 0 0" width="10" height="10" color="grey" static-body></a-plane>
+       <a-box position="-2 0 -2" height="1.7" color="black" static-body></a-box>
+       <a-box position="-2 1 -4.3" height="2" color="black" static-body></a-box>
+
+       <a-plane  position="0 0 -10" rotation="-90 0 0" width="10" height="10" color="red" static-body></a-plane>
+       <a-box position="-2 1 -7" height="2" color="black" static-body></a-box>
+
+     <script>
+  const rig = document.getElementById('cameraRig');
+  let isJumping = false;
+  let velocity = 0;
+  const gravity = -0.01;
+  const jumpStrength = 0.25;
+
+  let movementDisabled = false;
+
+  const boxes = [
+    { minX: -2.5, maxX: -1.5, minZ: -2.5, maxZ: -1.5, topY: 1.7 }, // Box 1
+    { minX: -2.5, maxX: -1.5, minZ: -4.8, maxZ: -3.8, topY: 3 },   // Box 2
+    { minX: -2.5, maxX: -1.5, minZ: -7.5, maxZ: -6.5, topY: 2 }    // Box 3 (on red plane)
+  ];
+
+  const redPlane = { minX: -5, maxX: 5, minZ: -15, maxZ: -5, topY: 0 };
+
+  function isOverArea(pos, area) {
+    return (
+      pos.x >= area.minX && pos.x <= area.maxX &&
+      pos.z >= area.minZ && pos.z <= area.maxZ
+    );
+  }
+
+  function getGroundLevel(pos) {
+    for (let box of boxes) {
+      if (isOverArea(pos, box)) return box.topY;
+    }
+
+    if (isOverArea(pos, redPlane)) return redPlane.topY;
+
+    return 0;
+  }
+
+  function handleRedPlaneTouch(pos, groundY) {
+    const landedOnRed = isOverArea(pos, redPlane) && groundY === redPlane.topY;
+
+    if (landedOnRed && !movementDisabled) {
+      movementDisabled = true;
+      rig.removeAttribute('movement-controls');
+      alert("You landed on the red plane. Restarting...");
+      setTimeout(() => {
+        location.reload();
+      }, 100); // Give browser time to process before reload
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && !isJumping && !movementDisabled) {
+      isJumping = true;
+      velocity = jumpStrength;
+    }
+  });
+
+  function jumpLoop() {
+    const pos = rig.object3D.position;
+    const groundY = getGroundLevel(pos);
+
+    if (isJumping || pos.y > groundY) {
+      velocity += gravity;
+      pos.y += velocity;
+
+      if (pos.y <= groundY) {
+        pos.y = groundY;
+        isJumping = false;
+        velocity = 0;
+
+        handleRedPlaneTouch(pos, groundY);
+      }
+    }
+
+    requestAnimationFrame(jumpLoop);
+  }
+
+  jumpLoop();
+</script>
+
+
     </a-scene>
   </body>
 </html>
