@@ -32,7 +32,7 @@
   </a-text>
 
   <a-text 
-    value="Jump on the cubes!" 
+    value="Jump on the platforms!" 
     position="0 5 -8" 
     rotation="0 0 0" 
     color="black"
@@ -47,6 +47,7 @@
     width="20">
   </a-text>
 
+       <!--First pathway-->
       <a-plane  position="0 0 5" rotation="-90 0 0" width="20" height="20" color="grey" static-body></a-plane>
        <a-box position="-2 0.5 -2" height="1" color="black" static-body></a-box>
        <a-box position="-2 1 -4.3" height="2" color="black" static-body></a-box>
@@ -55,6 +56,9 @@
        <a-box position="-1 1 -7" height="2" color="black" static-body></a-box>
        <a-box position="-2 0.5 -10" height="1" color="black" static-body></a-box>
        <a-box position="-3 1 -13" height="2" color="black" static-body></a-box>
+
+       <!--Second pathway-->
+       <a-sphere position="3 1 -7" color="grey" static-body></a-sphere>
 
      <script>
   const rig = document.getElementById('cameraRig');
@@ -70,8 +74,11 @@
     { minX: -2.5, maxX: -1.5, minZ: -4.8, maxZ: -3.8, topY: 2 },   // Box 2
     { minX: -1.5, maxX: -0.5, minZ: -7.5, maxZ: -6.5, topY: 2 },    // Box 3 (on red plane)
     { minX: -2.5, maxX: -0.5, minZ: -10.5, maxZ: -9.5, topY: 1 },    // Box 4 (on red plane)
-    { minX: -3.5, maxX: -1.5, minZ: -13.5, maxZ: -12.5, topY: 2 }    // Box 5 (on red plane)
+    { minX: -3.5, maxX: -1.5, minZ: -13.5, maxZ: -12.5, topY: 2 },    // Box 5 (on red plane)
+    { minX: 2.5, maxX: 3.5, minZ: -7.5, maxZ: -6.5, topY: 1.5 }    // Sphere 1 (on red plane)
   ];
+
+  
 
   const redPlane = { minX: -10, maxX: 10, minZ: -25, maxZ: -5, topY: 0 };
 
