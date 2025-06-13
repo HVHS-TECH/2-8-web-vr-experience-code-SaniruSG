@@ -9,6 +9,7 @@
         <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
 
         <script src="https://rawgit.com/donmccurdy/aframe-extras/v2.1.1/dist/aframe-extras.loaders.min.js"></script>
+        
 
   </head>
   <body>
@@ -47,20 +48,34 @@
     width="20">
   </a-text>
 
+  <!--Safe Zone walls-->
+<a-plane position="-10 1.5 5" rotation="0 90 0" scale="20 3 10" color="black"></a-plane>
+<a-plane position="0 1.5 15" rotation="0 180 0" scale="20 3 10" color="black"></a-plane>
+<a-plane position="10 1.5 5" rotation="0 -90 0" scale="20 3 10" color="black"></a-plane>
+
        <!--First pathway-->
-      <a-plane  position="0 0 5" rotation="-90 0 0" width="20" height="20" color="grey" static-body></a-plane>
+      <a-plane  position="0 0 5" rotation="-90 0 0" width="20" height="20" color="#90EE90" static-body></a-plane>
        <a-box position="-2 0.5 -2" height="1" color="black" static-body></a-box>
        <a-box position="-2 1 -4.3" height="2" color="black" static-body></a-box>
 
-       <a-plane src="Images/lava.jpg" position="0 0 -15" rotation="-90 0 0" width="20" height="20" static-body></a-plane>
+       <!--On Red Plane-->
+       <a-plane src="Images/lavafloor.jpg" position="0 0 -15" rotation="-90 0 0" width="20" height="20" static-body></a-plane>
        <a-box position="-1 1 -7" height="2" color="black" static-body></a-box>
        <a-box position="-2 0.5 -10" height="1" color="black" static-body></a-box>
        <a-box position="-3 1 -13" height="2" color="black" static-body></a-box>
 
        <!--Second pathway-->
        <a-sphere position="3 1 -7" color="grey" static-body></a-sphere>
+       <a-gltf-model src = "3d-models/scifi_platform.glb" scale="0.003 0.003 0.003" position="1 1 -10" rotation="0 90 0" static-body></a-gltf-model>
+       <a-gltf-model src="3d-models/wood_platform.glb" scale="1 1 1" rotation="0 0 0" position="0 -4.5 -17" static-body></a-gltf-model>
 
-     <script>
+  <div id="lava-popup" style="display:none; position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%);
+  background-color: red; color: white; padding: 20px 30px; font-size: 20px; border-radius: 12px; z-index: 9999;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3); text-align: center;">
+  You landed on the lava. Restarting...
+</div>
+
+  <script>
   const rig = document.getElementById('cameraRig');
   let isJumping = false;
   let velocity = 0;
@@ -70,19 +85,21 @@
   let movementDisabled = false;
 
   const boxes = [
-    { minX: -2.5, maxX: -1.5, minZ: -2.5, maxZ: -1.5, topY: 1 }, // Box 1
+    { minX: -2.5, maxX: -1, minZ: -2.5, maxZ: -1.5, topY: 1 }, // Box 1
     { minX: -2.5, maxX: -1.5, minZ: -4.8, maxZ: -3.8, topY: 2 },   // Box 2
     { minX: -1.5, maxX: -0.5, minZ: -7.5, maxZ: -6.5, topY: 2 },    // Box 3 (on red plane)
     { minX: -2.5, maxX: -0.5, minZ: -10.5, maxZ: -9.5, topY: 1 },    // Box 4 (on red plane)
+    { minX: 0, maxX: 2, minZ: -10.5, maxZ: -9.5, topY: 1},  // sci-fi platform (on red plane)
     { minX: -3.5, maxX: -1.5, minZ: -13.5, maxZ: -12.5, topY: 2 },    // Box 5 (on red plane)
-    { minX: 2.5, maxX: 3.5, minZ: -7.5, maxZ: -6.5, topY: 1.5 }    // Sphere 1 (on red plane)
+    { minX: 2.5, maxX: 3.5, minZ: -7.5, maxZ: -6.5, topY: 1.5 },    // Sphere 1 (on red plane)
+    { minX: -1.5, maxX: 0, minZ: -14.5, maxZ: -11.5, topY: 2.5 } // wooden platfrom (on red plane)
   ];
 
-  
+
 
   const redPlane = { minX: -10, maxX: 10, minZ: -25, maxZ: -5, topY: 0 };
 
-  function isOverArea(pos, area) {
+ function isOverArea(pos, area) {
     return (
       pos.x >= area.minX && pos.x <= area.maxX &&
       pos.z >= area.minZ && pos.z <= area.maxZ
@@ -99,18 +116,22 @@
     return 0;
   }
 
-  function handleRedPlaneTouch(pos, groundY) {
-    const landedOnRed = isOverArea(pos, redPlane) && groundY === redPlane.topY;
+function handleRedPlaneTouch(pos, groundY) {
+  const landedOnRed = isOverArea(pos, redPlane) && groundY === redPlane.topY;
 
-    if (landedOnRed && !movementDisabled) {
-      movementDisabled = true;
-      rig.removeAttribute('movement-controls');
-      alert("You landed on the lava. Restarting...");
-      setTimeout(() => {
-        location.reload();
-      }, 100); // Give browser time to process before reload
-    }
+  if (landedOnRed && !movementDisabled) {
+    movementDisabled = true;
+    rig.removeAttribute('movement-controls');
+
+    // Show custom popup
+    document.getElementById("lava-popup").style.display = "block";
+
+    // Restart after a short delay
+    setTimeout(() => {
+      location.reload();
+    }, 1500);
   }
+}
 
   document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' && !isJumping && !movementDisabled) {
@@ -123,6 +144,7 @@
     const pos = rig.object3D.position;
     const groundY = getGroundLevel(pos);
 
+    // Jumping or falling logic
     if (isJumping || pos.y > groundY) {
       velocity += gravity;
       pos.y += velocity;
@@ -132,6 +154,12 @@
         isJumping = false;
         velocity = 0;
 
+        // Check if landed on red plane
+        handleRedPlaneTouch(pos, groundY);
+      }
+    } else {
+      // Walking on red plane (not jumping)
+      if (!isJumping && groundY === redPlane.topY && isOverArea(pos, redPlane)) {
         handleRedPlaneTouch(pos, groundY);
       }
     }
