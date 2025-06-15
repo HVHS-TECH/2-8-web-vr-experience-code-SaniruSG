@@ -9,28 +9,64 @@
         <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
 
         <script src="https://rawgit.com/donmccurdy/aframe-extras/v2.1.1/dist/aframe-extras.loaders.min.js"></script>
-        
+
 
   </head>
   <body>
 
+    <style>
+      #lava-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 9998;
+  }
+
+  #lava-popup {
+    display: none;
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #f60000;
+    color: #ffffff;
+    padding: 25px 35px;
+    font-size: 22px;
+    border-radius: 14px;
+    z-index: 9999;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    font-family: Arial, sans-serif;
+    transition: all 0.3s ease;
+  }
+    </style>
+
      <a-scene>
 
 <a-entity id="cameraRig"
-          position="0 1 0"
+          position="0 1 5"
           movement-controls="speed: 0.5"
           dynamic-body="shape: box; mass: 1;">
   <a-entity camera id="camera" position="0 1.6 0" look-controls></a-entity>
 </a-entity>
 
-<a-text
+<a-entity src="Safe Zone" position="-7 0 0" rotation="-90 0 0">
+  <!-- Background plane -->
+  <a-plane 
+    color="white" 
+    scale="13 2.5 1"
+    position="6.5 0 0.01">
+  </a-plane>
+
+  <!-- Text -->
+  <a-text 
     value="Safe Zone!" 
-    position="0 0.01 -3" 
-    rotation="-90 0 0" 
-    
-    color="black"
-    width="6">
+    color="black" 
+    width="60" 
+    position="0 0 0.02">
   </a-text>
+</a-entity>
 
   <a-text 
     value="Jump on the platforms!" 
@@ -54,26 +90,24 @@
 <a-plane position="10 1.5 5" rotation="0 -90 0" scale="20 3 10" color="black"></a-plane>
 
        <!--First pathway-->
-      <a-plane  position="0 0 5" rotation="-90 0 0" width="20" height="20" color="#90EE90" static-body></a-plane>
-       <a-box position="-2 0.5 -2" height="1" color="black" static-body></a-box>
+      <a-plane src="Images/rockyabstract.jpeg" position="0 0 5" rotation="-90 0 0" width="20" height="20"  static-body></a-plane>
+       <a-box position="-2 0.5 -2" height="1" color="grey" static-body></a-box>
        <a-box position="-2 1 -4.3" height="2" color="black" static-body></a-box>
 
        <!--On Red Plane-->
        <a-plane src="Images/lavafloor.jpg" position="0 0 -15" rotation="-90 0 0" width="20" height="20" static-body></a-plane>
-       <a-box position="-1 1 -7" height="2" color="black" static-body></a-box>
+       <a-box position="-1 1 -7" height="2" color="grey" static-body></a-box>
        <a-box position="-2 0.5 -10" height="1" color="black" static-body></a-box>
-       <a-box position="-3 1 -13" height="2" color="black" static-body></a-box>
+       <a-box position="-3 1 -13" height="2" color="grey" static-body></a-box>
 
        <!--Second pathway-->
        <a-sphere position="3 1 -7" color="grey" static-body></a-sphere>
        <a-gltf-model src = "3d-models/scifi_platform.glb" scale="0.003 0.003 0.003" position="1 1 -10" rotation="0 90 0" static-body></a-gltf-model>
        <a-gltf-model src="3d-models/wood_platform.glb" scale="1 1 1" rotation="0 0 0" position="0 -4.5 -17" static-body></a-gltf-model>
 
-  <div id="lava-popup" style="display:none; position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%);
-  background-color: red; color: white; padding: 20px 30px; font-size: 20px; border-radius: 12px; z-index: 9999;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3); text-align: center;">
-  You landed on the lava. Restarting...
-</div>
+
+<div id="lava-overlay"></div>
+<div id="lava-popup">You landed on the lava. Restarting...</div>
 
   <script>
   const rig = document.getElementById('cameraRig');
@@ -123,15 +157,17 @@ function handleRedPlaneTouch(pos, groundY) {
     movementDisabled = true;
     rig.removeAttribute('movement-controls');
 
-    // Show custom popup
+    // Show overlay and popup
+    document.getElementById("lava-overlay").style.display = "block";
     document.getElementById("lava-popup").style.display = "block";
 
-    // Restart after a short delay
+    // Restart after short delay
     setTimeout(() => {
       location.reload();
     }, 1500);
   }
 }
+
 
   document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' && !isJumping && !movementDisabled) {
