@@ -15,20 +15,6 @@
   <body>
 
     <style>
-.settings-btn img {
-  width: 200px;   
-  height: auto;  
-}
-
-.settings-btn {
-  background: transparent;
-  background: none;
-  border: none;
-  cursor: pointer;
-  position: absolute;
-  bottom: 33vh;
-  left: 20vw;
-}
 
 
 #finish-overlay {
@@ -57,8 +43,6 @@
   transition: all 0.3s ease;
 }
 
-
-
       #lava-overlay {
     display: none;
     position: fixed;
@@ -84,13 +68,29 @@
     font-family: Arial, sans-serif;
     transition: all 0.3s ease;
   }
+
+  .settings-btn {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 10000;
+  }
+
+  .settings-btn img {
+    width: 60px;
+    height: 60px;
+  }
     </style>
 
-     <a-scene>
 
 <button type="button" class="settings-btn" onclick="window.location.href='index.html'">
-  <img src="Images/Settings.png">
+  <img src="Images/Settings.png" alt="Settings">
 </button>
+
+     <a-scene>
 
  <a-light id ="amb" type = "ambient" intensity="0.50"></a-light>
 
@@ -168,7 +168,7 @@
 <div id="lava-popup">You landed on the lava. Restarting...</div>
 
 <div id="finish-overlay"></div>
-<div id="finish-popup">🎉 Congratulations! You reached the Finish Line!</div>
+<div id="finish-popup">🎉 Congratulations! You reached the Finish Line! <p>Press Settings button to go Home</p></div>
 
 
 
