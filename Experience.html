@@ -131,6 +131,14 @@
   </a-text>
 
    <a-text 
+    value="Do not play in full screen!" 
+    position="-8 5 -8" 
+    rotation="0 0 0" 
+    color="black"
+    width="10">
+  </a-text>
+
+   <a-text 
     value="Finish Line!" 
     position="-4.5 5 -20" 
     rotation="0 0 0" 
@@ -142,10 +150,7 @@
 
   <a-sky src="Images/blue-white.jpg"></a-sky>
 
-  <!--Safe Zone walls-->
-<a-plane position="-10 1.5 5" rotation="0 90 0" scale="20 3 10" color="black" ></a-plane>
-<a-plane position="0 1.5 15" rotation="0 180 0" scale="20 3 10" color="black"></a-plane>
-<a-plane position="10 1.5 5" rotation="0 -90 0" scale="20 3 10" color="black"></a-plane>
+
 
        <!--First pathway-->
       <a-plane src="Images/rockyabstract.jpeg" position="0 0 5" rotation="-90 0 0" width="20" height="20"  static-body></a-plane>
@@ -153,7 +158,10 @@
        <a-box position="-2 1 -4.3" height="2" color="black" static-body></a-box>
 
        <!--On Red Plane-->
-       <a-plane src="Images/lavafloor.jpg" position="0 0 -15" rotation="-90 0 0" width="20" height="20" static-body></a-plane>
+       <a-plane src="Images/lavafloor.jpg" position="0 0 -25" rotation="-90 0 0" width="40" height="40" static-body></a-plane>
+       <a-plane src="Images/lavafloor.jpg" position="-30 0 0" rotation="-90 0 0" width="40" height="40" static-body></a-plane>
+       <a-plane src="Images/lavafloor.jpg" position="30 0 0" rotation="-90 0 0" width="40" height="40" static-body></a-plane>
+       <a-plane src="Images/lavafloor.jpg" position="0 0 35" rotation="-90 0 0" width="40" height="40" static-body></a-plane>
        <a-box position="-1 1 -7" height="2" color="grey" static-body></a-box>
        <a-box position="-2 0.5 -10" height="1" color="black" static-body></a-box>
        <a-box position="-3 1 -13" height="2" color="grey" static-body></a-box>
@@ -168,9 +176,7 @@
 <div id="lava-popup">You landed on the lava. Restarting...</div>
 
 <div id="finish-overlay"></div>
-<div id="finish-popup">🎉 Congratulations! You reached the Finish Line! <p>Press Settings button to go Home</p></div>
-
-
+<div id="finish-popup">🎉 Congratulations! You reached the Finish Line! <p>Press Settings button to go Home!</p></div>
 
   <script>
   const rig = document.getElementById('cameraRig');
@@ -193,10 +199,12 @@
     { minX: -3, maxX: -1, minZ: -21.5, maxZ: -17.5, topY: 3 } // rocky platform (on red plane)
   ];
 
-const redPlane = { minX: -10, maxX: 10, minZ: -25, maxZ: -5, topY: 0 };
+const redPlane = { minX: -20, maxX: 20, minZ: -45, maxZ: -5, topY: 0 }; //front
+const leftPlane  = { minX: -50, maxX: -10, minZ: -20, maxZ: 20,  topY: 0 }; //left
+const rightPlane = { minX: 10,  maxX: 50,  minZ: -20, maxZ: 20,  topY: 0 }; //right
+const frontPlane = { minX: -20, maxX: 20,  minZ: 15,  maxZ: 55,  topY: 0 }; //back
 
 const finishZone = { minX: -3, maxX: -1, minZ: -21.5, maxZ: -17.5, topY: 3 };
-
 
 
  function isOverArea(pos, area) {
@@ -217,9 +225,13 @@ const finishZone = { minX: -3, maxX: -1, minZ: -21.5, maxZ: -17.5, topY: 3 };
   }
 
 function handleRedPlaneTouch(pos, groundY) {
-  const landedOnRed = isOverArea(pos, redPlane) && groundY === redPlane.topY;
+  const planes = [redPlane, leftPlane, rightPlane, frontPlane];
 
-  if (landedOnRed && !movementDisabled) {
+  const landedOnAnyRed = planes.some(plane =>
+    isOverArea(pos, plane) && groundY === plane.topY
+  );
+
+  if (landedOnAnyRed && !movementDisabled) {
     movementDisabled = true;
     rig.removeAttribute('movement-controls');
 
@@ -235,6 +247,7 @@ function handleRedPlaneTouch(pos, groundY) {
 }
 
 
+
   document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' && !isJumping && !movementDisabled) {
       isJumping = true;
@@ -242,33 +255,39 @@ function handleRedPlaneTouch(pos, groundY) {
     }
   });
 
-  function jumpLoop() {
-    const pos = rig.object3D.position;
-    const groundY = getGroundLevel(pos);
+ function jumpLoop() {
+  const pos = rig.object3D.position;
+  const groundY = getGroundLevel(pos);
 
-    // Jumping or falling logic
-    if (isJumping || pos.y > groundY) {
-      velocity += gravity;
-      pos.y += velocity;
+  // Jumping or falling logic
+  if (isJumping || pos.y > groundY) {
+    velocity += gravity;
+    pos.y += velocity;
 
-      if (pos.y <= groundY) {
-        pos.y = groundY;
-        isJumping = false;
-        velocity = 0;
+    if (pos.y <= groundY) {
+      pos.y = groundY;
+      isJumping = false;
+      velocity = 0;
 
-        // Check if landed on red plane
-        handleRedPlaneTouch(pos, groundY);
+      // Check if landed on any red plane
+      handleRedPlaneTouch(pos, groundY);
 
-          // Check if reached finish line
-  handleFinishLineTouch(pos, groundY);
-
-      }
-    } else {
-      // Walking on red plane (not jumping)
-      if (!isJumping && groundY === redPlane.topY && isOverArea(pos, redPlane)) {
-        handleRedPlaneTouch(pos, groundY);
-      }
+      // Check if reached finish line
+      handleFinishLineTouch(pos, groundY);
     }
+  } else {
+    // Walking on red plane (not jumping)
+    const planes = [redPlane, leftPlane, rightPlane, frontPlane];
+    const standingOnRed = planes.some(
+      plane => groundY === plane.topY && isOverArea(pos, plane)
+    );
+
+    if (standingOnRed) {
+      handleRedPlaneTouch(pos, groundY);
+    }
+  }
+
+
 
     requestAnimationFrame(jumpLoop);
   }
